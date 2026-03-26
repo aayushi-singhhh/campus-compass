@@ -1,0 +1,179 @@
+name: Create Project Issues
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/create-issues.yml'
+
+permissions:
+  issues: write
+
+jobs:
+  create-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const labels = [
+              { name: 'frontend', color: '0075ca', description: 'Frontend changes' },
+              { name: 'ui/ux', color: 'e4e669', description: 'UI/UX improvements' },
+            ];
+
+            for (const label of labels) {
+              try {
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label.name,
+                  color: label.color,
+                  description: label.description,
+                });
+                console.log(`Created label: ${label.name}`);
+              } catch (e) {
+                if (e.status === 422) {
+                  console.log(`Label already exists: ${label.name}`);
+                } else {
+                  throw e;
+                }
+              }
+            }
+
+      - name: Create issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issues = [
+              {
+                title: 'Add Search Bar for Locations',
+                labels: ['good first issue', 'frontend'],
+                body: `## Description
+            Implement a search input in the sidebar to filter campus locations.
+
+            ## Acceptance Criteria
+            - [ ] Real-time filtering works
+            - [ ] Case-insensitive search
+            - [ ] Empty input resets list`,
+              },
+              {
+                title: 'Add "Swap Start & End" Button',
+                labels: ['good first issue', 'frontend'],
+                body: `## Description
+            Allow users to swap selected start and end locations.
+
+            ## Acceptance Criteria
+            - [ ] Values swap instantly
+            - [ ] UI updates correctly`,
+              },
+              {
+                title: 'Add Loading Indicator for Route Fetch',
+                labels: ['good first issue', 'frontend'],
+                body: `## Description
+            Show a loading spinner when fetching route data.
+
+            ## Acceptance Criteria
+            - [ ] Spinner appears during API call
+            - [ ] Disappears after response`,
+              },
+              {
+                title: 'Add Error Handling UI',
+                labels: ['good first issue', 'frontend'],
+                body: `## Description
+            Display user-friendly error messages when API fails.
+
+            ## Acceptance Criteria
+            - [ ] Errors visible in UI
+            - [ ] No app crash`,
+              },
+              {
+                title: 'Implement Dark Mode Toggle',
+                labels: ['frontend', 'enhancement'],
+                body: `## Description
+            Add light/dark theme toggle.
+
+            ## Acceptance Criteria
+            - [ ] Theme switches instantly
+            - [ ] Preference persists (localStorage)`,
+              },
+              {
+                title: 'Add Route Summary Panel',
+                labels: ['frontend'],
+                body: `## Description
+            Show route details like distance and estimated time (mock).
+
+            ## Acceptance Criteria
+            - [ ] Visible after route selection
+            - [ ] Updates dynamically`,
+              },
+              {
+                title: 'Make Sidebar Collapsible',
+                labels: ['frontend', 'ui/ux'],
+                body: `## Description
+            Allow sidebar to collapse for better map visibility.
+
+            ## Acceptance Criteria
+            - [ ] Smooth toggle animation
+            - [ ] Map resizes correctly`,
+              },
+              {
+                title: 'Add Marker Hover Tooltip',
+                labels: ['frontend'],
+                body: `## Description
+            Show location name when hovering over map markers.
+
+            ## Acceptance Criteria
+            - [ ] Tooltip appears on hover
+            - [ ] Disappears smoothly`,
+              },
+              {
+                title: 'Add Map Legend Component',
+                labels: ['frontend', 'ui/ux'],
+                body: `## Description
+            Add a legend explaining markers, routes, and layers.
+
+            ## Acceptance Criteria
+            - [ ] Clearly visible on map
+            - [ ] Matches UI elements`,
+              },
+              {
+                title: 'Add Responsive Mobile Layout',
+                labels: ['frontend', 'ui/ux'],
+                body: `## Description
+            Make the app usable on mobile devices.
+
+            ## Acceptance Criteria
+            - [ ] Layout adapts to small screens
+            - [ ] Sidebar usable on mobile
+            - [ ] No overflow issues`,
+              },
+            ];
+
+            // Get existing issues (open and closed) to avoid duplicates
+            const existingIssues = await github.paginate(
+              github.rest.issues.listForRepo,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'all',
+              }
+            );
+            const existingTitles = existingIssues.map(i => i.title);
+
+            for (const issue of issues) {
+              if (existingTitles.includes(issue.title)) {
+                console.log(`Issue already exists: ${issue.title}`);
+                continue;
+              }
+              const created = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: issue.title,
+                body: issue.body,
+                labels: issue.labels,
+              });
+              console.log(`Created issue #${created.data.number}: ${issue.title}`);
+            }
