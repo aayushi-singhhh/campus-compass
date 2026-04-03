@@ -26,7 +26,6 @@ This project is built for students, developers, and contributors interested in b
 
 ## 2. Architecture / Key Modules
 
-> **For Maintainers:** List the main folders, services, or components. Help contributors understand the codebase structure.
 
 ## Module Overview
 
@@ -247,8 +246,6 @@ Users cannot quickly find specific buildings or facilities.
 ---
 
 ## 5. Good First Issues
-
-> **For Maintainers:** List beginner-friendly tasks. These should be well-scoped and low-risk.
 
 ### Good First Issues (Smart Campus Navigator)
 
