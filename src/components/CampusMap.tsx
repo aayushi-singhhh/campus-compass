@@ -1,7 +1,14 @@
 import { useEffect, useRef } from "react";
 import L from "leaflet";
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
 import "leaflet/dist/leaflet.css";
 import { locations } from "@/data/locations";
+import MapLegend from "./MapLegend";
 
 // Fix default marker icons for bundlers
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
@@ -82,7 +89,12 @@ const CampusMap = ({ routePath, focusLocationId }: CampusMapProps) => {
     }
   }, [focusLocationId]);
 
-  return <div ref={containerRef} className="w-full h-full" />;
+  return (
+  <div className="relative w-full h-full">
+    <div ref={containerRef} className="w-full h-full" />
+    <MapLegend />
+  </div>
+);
 };
 
 export default CampusMap;
