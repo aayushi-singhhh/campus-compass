@@ -27,11 +27,12 @@ L.Icon.Default.mergeOptions({
 interface CampusMapProps {
   routePath: [number, number][] | null;
   focusLocationId: string | null;
+  isCollapsed: boolean;
 }
 
 const CAMPUS_CENTER: [number, number] = [28.6330, 77.2388];
 
-const CampusMap = ({ routePath, focusLocationId }: CampusMapProps) => {
+const CampusMap = ({ routePath, focusLocationId, isCollapsed }: CampusMapProps) => {
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const polylineRef = useRef<L.Polyline | null>(null);
@@ -88,6 +89,18 @@ const CampusMap = ({ routePath, focusLocationId }: CampusMapProps) => {
       mapRef.current.flyTo([loc.latitude, loc.longitude], 17, { duration: 0.8 });
     }
   }, [focusLocationId]);
+
+  // Adjust map dimensions when the sidebar toggles
+  useEffect(() => {
+    if (mapRef.current) {
+      // Sync map size with sidebar transition (300ms)
+      const timer = setTimeout(() => {
+        mapRef.current?.invalidateSize();
+      }, 300);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isCollapsed]);
 
   return (
   <div className="relative w-full h-full">
