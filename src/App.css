@@ -40,3 +40,14 @@
 .read-the-docs {
   color: #888;
 }
+
+.leaflet-tooltip {
+  background-color: #1f1f1f;
+  color: #faf9f6;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-family: monospace;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}

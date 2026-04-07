@@ -47,10 +47,16 @@ const CampusMap = ({ routePath, focusLocationId }: CampusMapProps) => {
 
     // Add markers
     locations.forEach((loc) => {
-      L.marker([loc.latitude, loc.longitude])
-        .addTo(map)
-        .bindPopup(`<strong>${loc.name}</strong><br/>${loc.description}`);
+   L.marker([loc.latitude, loc.longitude])
+    .addTo(map)
+    .bindPopup(`<strong>${loc.name}</strong><br/>${loc.description}`)
+    .bindTooltip(`<span>${loc.name}</span>`, {
+      direction: "top",
+      offset: [0, -10],
+      opacity: 0.9,
+      sticky: true,
     });
+});
 
     mapRef.current = map;
 
