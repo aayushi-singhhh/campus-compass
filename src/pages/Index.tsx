@@ -5,16 +5,23 @@ import CampusMap from "@/components/CampusMap";
 import RouteInfo from "@/components/RouteInfo";
 import { fetchRoute, type RouteResult } from "@/services/api";
 import { ChevronLeft } from "lucide-react";
+import { LoadingIndicator } from "@/components/LoadingIndicator";
 
 const Index = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [routeResult, setRouteResult] = useState<RouteResult | null>(null);
   const [focusLocationId, setFocusLocationId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleRoute = useCallback(async (fromId: string, toId: string) => {
-    const result = await fetchRoute(fromId, toId);
-    setRouteResult(result);
-    if (result) setFocusLocationId(null);
+    setIsLoading(true);
+    try {
+      const result = await fetchRoute(fromId, toId);
+      setRouteResult(result);
+      if (result) setFocusLocationId(null);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   const handleSelectLocation = useCallback((id: string) => {
@@ -58,6 +65,7 @@ const Index = () => {
         </button>
 
         <main className="flex-1 relative">
+          <LoadingIndicator isLoading={isLoading} />
           <CampusMap
             routePath={routeResult?.path ?? null}
             focusLocationId={focusLocationId}
